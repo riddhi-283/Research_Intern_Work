@@ -1,0 +1,18 @@
+Title: {{title}}
+Abstract: {{abstract}}
+Introduction: {{introduction}}
+Conclusion: {{conclusion}}
+
+What are the objective, method, findings, contributions and keywords of the paper above? Answer in the format of:
+Objective: XXX.
+Method: XXX.
+Findings: XXX.
+Contribution: XXX.
+Keywords: A; B; C.
+
+Faceted Summary
+Objective: {{objective}}
+Method: {{method}}
+Findings: {{findings}}
+Contribution: {{contribution}}
+Keywords: {{keywords}}

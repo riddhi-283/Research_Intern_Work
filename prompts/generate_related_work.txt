@@ -1,0 +1,15 @@
+Title: {{title}}
+Abstract: {{abstract}}
+Introduction: {{introduction}}
+Conclusion: {{conclusion}}
+
+Main idea of the related work section:
+{{main_idea}}
+
+List of cited papers:
+{{cited_info}}
+
+Relationships among papers:
+{{relationships}}
+
+Write a related work section that includes all papers, integrates their content, and uses transitions. Do not list summaries. Use paragraph structure.

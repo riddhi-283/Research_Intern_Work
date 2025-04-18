@@ -1,0 +1,14 @@
+Faceted summary of the citing paper, {{title_A}} by {{author_A}} et al. {{year_A}}:
+{{faceted_A}}
+
+Faceted summary of the cited paper, {{title_B}} by {{author_B}} et al. {{year_B}}:
+{{faceted_B}}
+
+Citation contexts that {{author_A}} et al. {{year_A}} cites {{author_B}} et al. {{year_B}} (which is cited as {{citation_marker}}):
+1. {{span_1}}
+2. {{span_2}}
+...
+
+Very briefly explain the relationship between {{author_A}} et al. {{year_A}} and {{title_B}} by {{author_B}} et al. {{year_B}}. TLDR:
+Relation Between Paper Pairs
+{{author_A}} et al. {{year_A}} cites {{author_B}} et al. {{year_B}} ...

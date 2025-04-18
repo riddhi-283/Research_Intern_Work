@@ -1,0 +1,9 @@
+Our title: {{title}}
+Faceted summary of our paper:
+{{faceted_summary}}
+
+Write a short summary of the main idea of the following related work section paragraphs. Ignore citations.
+{{related_work_section}}
+
+Main idea of the target related work section
+{{main_ideas}}

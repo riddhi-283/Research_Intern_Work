@@ -1,0 +1,14 @@
+How other papers cite {{author_B}} et al. {{year_B}}:
+{{relations}}
+
+Example citation fragments:
+1. {{span_1}}
+2. {{span_2}}
+...
+
+Very briefly answer what {{author_B}} et al. {{year_B}} is mostly known for, and the common citation intent.
+Hint: pay attention to how {{author_B}} et al. {{year_B}} is referred by the citing papers. Answer in the format:
+"{{author_B}} et al. {{year_B}} is known for XXX and it is cited for YYY". TLDR:
+
+Enriched Citation Usage
+{{author_B}} et al. {{year_B}} is known for ... and it is cited for ...
