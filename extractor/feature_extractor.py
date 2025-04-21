@@ -1,14 +1,18 @@
 # extractor/feature_extractor.py
 import openai
 from pathlib import Path
+from dotenv import load_dotenv
 
+load_dotenv()
+
+client = openai.OpenAI()
 def call_openai(prompt, model="gpt-3.5-turbo", temperature=0.5):
-    response = openai.ChatCompletion.create(
+    response = client.responses.create(
         model=model,
-        messages=[{"role": "user", "content": prompt}],
+        input=[{"role": "user", "content": prompt}],
         temperature=temperature
     )
-    return response["choices"][0]["message"]["content"].strip()
+    return response.output_text
 
 def generate_faceted_summary(taic_dict):
     prompt_template = Path("prompts/generate_faceted_summary.txt").read_text()
