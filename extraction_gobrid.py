@@ -1,5 +1,88 @@
 import requests
 import xml.etree.ElementTree as ET
+import re
+import fitz
+
+import re
+from collections import defaultdict
+
+def clean_text_with_regex(full_text):
+    # Remove lines with IEEE footer patterns (copyright, DOI, ISBN, etc.)
+    patterns = [
+        r"\bISBN\b.*?\d{3}-\d-\d{4}-\d{4}-\d",  # ISBN
+        r"©\d{4} IEEE",                         # ©2024 IEEE
+        r"IEEE Xplore.*?ISBN.*?\d+",            # IEEE Xplore metadata
+        r"Authorized licensed use.*?Restrictions apply\.",  # Licensing footer
+        r"\d{3,4}",                             # Standalone page numbers like 658
+        r"\bProceedings of the .*?Conference.*?\)",  # Conference headers
+        r"DOI: *10\.\d{4,9}/[-._;()/:A-Z0-9]+",       # DOI
+        r"http.*?ieee\.org.*",                  # IEEE download URL
+    ]
+
+    # Compile regex
+    combined = re.compile("|".join(patterns), re.IGNORECASE)
+    
+    # Remove lines matching patterns
+    lines = full_text.split('\n')
+    filtered_lines = [line for line in lines if not combined.search(line)]
+    
+    # Return cleaned-up string
+    return ' '.join(filtered_lines)
+
+def extract_raw_text_between_sections(pdf_path, start_keywords, stop_keywords):
+    doc = fitz.open(pdf_path)
+    raw_text = ""
+    for page in doc:
+        raw_text += page.get_text()
+
+    cleaned_text = clean_text_with_regex(raw_text)
+    text = re.sub(r'\s+', ' ', cleaned_text)
+    lower_text = text.lower()
+
+    start_idx = stop_idx = None
+
+    for kw in start_keywords:
+        match = re.search(r'\b' + re.escape(kw.lower()) + r'\b', lower_text)
+        if match:
+            start_idx = match.start()
+            break
+
+    for kw in stop_keywords:
+        match = re.search(r'\b' + re.escape(kw.lower()) + r'\b', lower_text)
+        if match:
+            stop_idx = match.start()
+            break
+
+    if start_idx is not None:
+        return text[start_idx:stop_idx].strip() if stop_idx else text[start_idx:].strip()
+    return None
+
+# def extract_raw_text_between_sections(pdf_path, start_keywords, stop_keywords):
+    doc = fitz.open(pdf_path)
+    full_text = ""
+    for page in doc:
+        full_text += page.get_text()
+
+    # Normalize text
+    text = re.sub(r'\s+', ' ', full_text)
+    lower_text = text.lower()
+    start_idx = stop_idx = None
+
+    for kw in start_keywords:
+        match = re.search(r'\b' + re.escape(kw.lower()) + r'\b', lower_text)
+        if match:
+            start_idx = match.start()
+            break
+
+    for kw in stop_keywords:
+        match = re.search(r'\b' + re.escape(kw.lower()) + r'\b', lower_text)
+        if match:
+            stop_idx = match.start()
+            break
+
+    if start_idx is not None:
+        return text[start_idx:stop_idx].strip() if stop_idx else text[start_idx:].strip()
+    return None
 
 def extract_sections_from_pdf(pdf_path, grobid_url="http://localhost:8070/api/processFulltextDocument"):
     # Step 1: Send PDF to Grobid
@@ -14,7 +97,6 @@ def extract_sections_from_pdf(pdf_path, grobid_url="http://localhost:8070/api/pr
 
     # Step 2: Parse the XML
     root = ET.fromstring(response.text)
-
     ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
     result = {}
 
@@ -40,13 +122,24 @@ def extract_sections_from_pdf(pdf_path, grobid_url="http://localhost:8070/api/pr
             elif "CONCLUSION" in section_title or "CONCLUSIONS" in section_title:
                 result['conclusion'] = " ".join(div.itertext()).strip()
 
+    # If introduction seems too short, try fallback extraction
+    intro = result.get('introduction', '')
+    if len(intro.split()) < 50:
+        patched_intro = extract_raw_text_between_sections(
+            pdf_path,
+            start_keywords=["Introduction"],
+            stop_keywords=["Literature Review", "Related Work", "Methodology"]
+        )
+        if patched_intro:
+            result['introduction'] = patched_intro
+
     return result
 
 
 # Example usage
-pdf_file_path = "target_paper.pdf"
+pdf_file_path = "data/target_paper2.pdf"
 sections = extract_sections_from_pdf(pdf_file_path)
 
 for sec, content in sections.items():
     print(f"\n--- {sec.upper()} ---\n")
-    print(content[:1000], "...")  # Print first 1000 chars for readability
+    print(content)  
